@@ -1,0 +1,113 @@
+#TOOLS: pixel math, plotter, imaging library
+import numpy as np 
+import matplotlib.pyplot as plt
+from PIL import Image
+
+#FILE PATHS
+input_path = "/Users/ximenaguevara/Desktop/Image Processing/Images/Input.jpg"
+output_path = "/Users/ximenaguevara/Desktop/Image Processing/Images/Output.jpg"
+
+#CONTROLS - BALANCE
+
+lift = 0.02
+gain = 1.0
+gamma = 1.0
+offset = 0.0
+contrast = 1.0
+pivot = 0.435
+
+#CONTROLS - RGB
+sat_r = 0.5
+sat_g = 1.6
+sat_b = 0.03
+
+#CONTROLS - RGB WEIGHT
+lum_r = 0.2126
+lum_g = 0.7152
+lum_b = 0.0722
+
+#CONTROLS - GLOBAL SATURATION
+saturation = 0.01
+
+
+#OPEN IMAGE + CONVERT TO RGB
+image = Image.open(input_path).convert("RGB")
+
+#CONVERT TO NUMPY ARRAY
+frame = np.array(image)
+
+#CONVERT 255 - 0.0 - 1.0
+arr = frame.astype(np.float32) / 255.0
+
+#MAKE A WORKING COPY
+img = arr.copy()
+
+#LIFT
+img = np.maximum(img + lift, 0.0)
+
+#GAIN
+img = img * gain
+
+#GAMMA
+img = np.power(img, 1.0 / gamma)
+
+#OFFSET
+img = img + offset
+
+#GLOBAL CONTRAST
+img = (
+     (img - pivot) * contrast 
+     + pivot
+)
+
+#SEPARATE RGB CHANNELS
+r = img[:, :, 0]
+g = img[:, :, 1]
+b = img[:, :, 2]
+
+
+#BUILD LUMA REFERENCE
+luma = (
+    lum_r * r
+    + lum_g * g
+    + lum_b * b
+)
+
+#APPLY CHANNEL-SATURATION
+r_out = luma + sat_r * (r - luma)
+g_out = luma + sat_g * (g - luma)
+b_out = luma + sat_b * (b - luma)
+
+
+#RECOMBINE RGB
+img = np.stack(
+    [r_out, g_out, b_out],
+    axis=2
+    )
+
+#FLOOR AND CEILING
+img = np. clip(img, 0.0, 1.0)
+
+
+#DISPLAY ORIGINAL IMAGE
+plt.figure(figsize=(15, 8))
+plt.imshow(arr)
+plt.title("Original")
+plt.axis("on")
+plt.show ()
+
+#DISPLAY PROCESSED IMAGE
+plt.figure(figsize=(15, 8))
+plt.imshow(img)
+plt.title("Processed")
+plt.axis("on")
+plt.show()
+
+#CONVERT FROM NORMALIZED FLOAT BAK TO 8-BIT
+output_frame = np.round(img * 255).astype(np.uint8)
+
+#SAVE IMAGE
+output_image = Image.fromarray(output_frame)
+output_image.save(output_path)
+
+print(f"Done. Wrote {output_path}")
