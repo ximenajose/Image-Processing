@@ -1,0 +1,84 @@
+# TOOLS
+from PIL import Image
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+# FUNCTION: CONVERT IMAGE TO CSV USING NUMPY
+def image_to_csv(image_path, csv_path):
+
+    # IMAGE INPUT: OPEN IMAGE, FORCE RGB, CONVERT TO NUMPY
+    rgb = np.array(Image.open(image_path).convert("RGB"))
+    h, w, _ = rgb.shape
+
+    # XY POSITION: CREATE XY PLANE WITH 0,0 AT TOP LEFT
+    y, x = np.indices((h, w))
+
+    # RGB: SEPARATE CHANNELS
+    r = rgb[..., 0]
+    g = rgb[..., 1]
+    b = rgb[..., 2]
+
+    # LUMA: WEIGHT RGB CHANNELS, NORMALIZE LUMA TO 0-1
+    luma = (
+        (0.2126 * r)
+        + (0.7152 * g)
+        + (0.0722 * b)
+    ) / 255
+
+    # DATA: FLATTEN ARRAYS INTO COLUMNS
+    data = np.column_stack((
+        x.ravel(),
+        y.ravel(),
+        r.ravel(),
+        g.ravel(),
+        b.ravel(),
+        luma.ravel()
+    ))
+
+    # EXPORT: SAVE VALUES INTO ONE CSV FILE
+    np.savetxt(
+        csv_path,
+        data,
+        delimiter=",",
+        header="x,y,R,G,B,luma",
+        comments="",
+        fmt=["%d", "%d", "%d", "%d", "%d", "%.6f"]
+    )
+
+    # CSV INPUT: REOPEN EXPORTED CSV
+    csv = np.loadtxt(
+        csv_path,
+        delimiter=",",
+        skiprows=1
+    )
+
+    # IMAGE REBUILD: RECREATE RGB IMAGE FROM CSV
+    recreated = np.zeros((h, w, 3), dtype=np.uint8)
+
+    recreated[
+        csv[:, 1].astype(int),
+        csv[:, 0].astype(int)
+    ] = csv[:, 2:5].astype(np.uint8)
+
+    # COMPARISON: DISPLAY ORIGINAL AND RECREATED IMAGES
+    plt.figure(figsize=(12, 6))
+
+    plt.subplot(1, 2, 1)
+    plt.imshow(rgb)
+    plt.title("Original Input")
+    plt.axis("on")
+
+    plt.subplot(1, 2, 2)
+    plt.imshow(recreated)
+    plt.title("Output Recreated from CSV")
+    plt.axis("on")
+
+    plt.show()
+
+
+# OUTPUT: RUN FUNCTION AND CREATE PIXEL DATA CSV
+image_to_csv(
+    "/Users/ximenaguevara/Desktop/Image Processing/Images/20260713.jpg",
+    "/Users/ximenaguevara/Desktop/Image Processing/Images/Input2.csv"
+)
