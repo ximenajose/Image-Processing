@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 # FUNCTION: INPUT IMAGE PATH AND CSV OUTPUT PATH
 def image_to_csv(image_path, csv_path):
 
-    # STANDARDIZE IMAGE: OPEN IMAGE, FORCE INTO RGB, CONVERT TO NUMPY
+    # STANDARDIZE IMAGE: OPEN IMAGE, CONVERT PILLOW INFO INTO 3-CHANNEL RGB THROW AWAY THE REST, CONVERT TO NUMPY
     rgb = np.array(Image.open(image_path).convert("RGB"))
     h, w, _ = rgb.shape
 
@@ -19,12 +19,12 @@ def image_to_csv(image_path, csv_path):
     g = rgb[..., 1]
     b = rgb[..., 2]
 
-    # LUMA: CALCULATE BRIGHTNESS VALUE FROM WEIGHTED RGB CHANNELS (STANDARD WEIGHTS), NORMALIZE FROM 8-BIT INTO 0-1
+    # LUMA: CALCULATE BRIGHTNESS VALUE FROM WEIGHTED RGB CHANNELS (STANDARD REC.709 WEIGHTS), NORMALIZE FROM 8-BIT INTO 0-1
     luma = (
         (0.2126 * r)
         + (0.7152 * g)
         + (0.0722 * b)
-    ) / 255
+    ) / 255 # ASSUMES 8-BIT, CAN BE ADAPTED FOR 10, 12, 16 BIT AS NEEDED
 
     # DATA: FLATTEN ARRAYS INTO COLUMNS WHERE EACH ROW IS ONE PIXEL
     data = np.column_stack((
@@ -46,7 +46,7 @@ def image_to_csv(image_path, csv_path):
         fmt=["%d", "%d", "%d", "%d", "%d", "%.6f"]
     )
 
-    # RELOAD: READS CSV FROM ABOVE INTO NUMPY FOR RECONSTRUCTION / VERIFICATION THAT NO DATA WAS LOST
+    # RELOAD: READS CSV FROM ABOVE INTO NUMPY FOR RECONSTRUCTION / VISUAL VERIFICATION THAT (PERCEPTUALLY) NO LOSS OCCURED
     csv = np.loadtxt(
         csv_path,
         delimiter=",",
@@ -54,25 +54,25 @@ def image_to_csv(image_path, csv_path):
     )
 
     # CONTAINER: CREATE EMPTY RGB NUMPY ARRAY WITH ORIGINAL DIMENSIONS
-    recreated = np.zeros((h, w, 3), dtype=np.uint8)
+    recreated = np.zeros((h, w, 3), dtype=np.uint8) # ASSUMES 8-BIT, CAN BE ADAPTED FOR 10, 12, 16 BIT AS NEEDED
 
     recreated[
-# RETROFIT: RECONVERT FLOATS INTO INTEGERS SO NUMPY CAN HANDLE THE INDEXING, RGB BACK TO 8-BIT UNSIGNED
+# RETROFIT: RECONVERT FLOATS INTO INTEGERS SO NUMPY CAN HANDLE THE INDEXING
         csv[:, 1].astype(int),
         csv[:, 0].astype(int)
-# REBUILD: PLACE EACH RGB VLAUE INTO ITS CORRESPONDING PIXEL LOCATION
-    ] = csv[:, 2:5].astype(np.uint8)
+# RETROFIT: RGB BACK TO 8-BIT UNSIGNED
+    ] = csv[:, 2:5].astype(np.uint8) # ASSUMES 8-BIT, CAN BE ADAPTED FOR 10, 12, 16 BIT AS NEEDED
 
     # DISPLAY: CREATE SIDE BY SIDE DISPLAY
     plt.figure(figsize=(12, 6))
 
-# IMAGE ONE DISPLAY 
+# IMAGE ONE DISPLAY (MISSING VALUES MAY STAY BLACK) 
     plt.subplot(1, 2, 1)
     plt.imshow(rgb)
     plt.title("Original Input")
     plt.axis("on")
 
-# IMAGE TWO DISPLAY
+# IMAGE TWO DISPLAY (MISSING VALUES MAY STAY BLACK)
     plt.subplot(1, 2, 2)
     plt.imshow(recreated)
     plt.title("Output Recreated from CSV")
