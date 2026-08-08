@@ -79,6 +79,6 @@ def image_to_csv(image_path, csv_path):
 
 # OUTPUT: RUN FUNCTION AND CREATE PIXEL DATA CSV
 image_to_csv(
-    "/Users/ximenaguevara/Desktop/Image Processing/Images/20260713.jpg",
-    "/Users/ximenaguevara/Desktop/Image Processing/Images/Input2.csv"
+    "/Users/YourUser/Input_Image.jpg",
+    "/Users/YourUser/Decomposed_Input_Image.csv"
 )
