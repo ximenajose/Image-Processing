@@ -4,29 +4,29 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# FUNCTION: CONVERT IMAGE TO CSV USING NUMPY
+# FUNCTION: INPUT IMAGE PATH AND CSV OUTPUT PATH
 def image_to_csv(image_path, csv_path):
 
-    # IMAGE INPUT: OPEN IMAGE, FORCE RGB, CONVERT TO NUMPY
+    # STANDARDIZE IMAGE: OPEN IMAGE, FORCE INTO RGB, CONVERT TO NUMPY
     rgb = np.array(Image.open(image_path).convert("RGB"))
     h, w, _ = rgb.shape
 
-    # XY POSITION: CREATE XY PLANE WITH 0,0 AT TOP LEFT
+    # COORDINATES: CREATE XY PLANE FOR THE PIXEL INFORMATION, WITH 0,0 ORIGIN AT TOP LEFT
     y, x = np.indices((h, w))
 
-    # RGB: SEPARATE CHANNELS
+    # RGB CHANNELS: PULLS INTO SEPARATE ARRAYS
     r = rgb[..., 0]
     g = rgb[..., 1]
     b = rgb[..., 2]
 
-    # LUMA: WEIGHT RGB CHANNELS, NORMALIZE LUMA TO 0-1
+    # LUMA: CALCULATE BRIGHTNESS VALUE FROM WEIGHTED RGB CHANNELS (STANDARD WEIGHTS), NORMALIZE FROM 8-BIT INTO 0-1
     luma = (
         (0.2126 * r)
         + (0.7152 * g)
         + (0.0722 * b)
     ) / 255
 
-    # DATA: FLATTEN ARRAYS INTO COLUMNS
+    # DATA: FLATTEN ARRAYS INTO COLUMNS WHERE EACH ROW IS ONE PIXEL
     data = np.column_stack((
         x.ravel(),
         y.ravel(),
@@ -36,7 +36,7 @@ def image_to_csv(image_path, csv_path):
         luma.ravel()
     ))
 
-    # EXPORT: SAVE VALUES INTO ONE CSV FILE
+    # EXPORT: ORGANIZE INTO CSV COLUMNS IN ORDER AND SAVE
     np.savetxt(
         csv_path,
         data,
@@ -46,38 +46,43 @@ def image_to_csv(image_path, csv_path):
         fmt=["%d", "%d", "%d", "%d", "%d", "%.6f"]
     )
 
-    # CSV INPUT: REOPEN EXPORTED CSV
+    # RELOAD: READS CSV FROM ABOVE INTO NUMPY FOR RECONSTRUCTION / VERIFICATION THAT NO DATA WAS LOST
     csv = np.loadtxt(
         csv_path,
         delimiter=",",
         skiprows=1
     )
 
-    # IMAGE REBUILD: RECREATE RGB IMAGE FROM CSV
+    # CONTAINER: CREATE EMPTY RGB NUMPY ARRAY WITH ORIGINAL DIMENSIONS
     recreated = np.zeros((h, w, 3), dtype=np.uint8)
 
     recreated[
+# RETROFIT: RECONVERT FLOATS INTO INTEGERS SO NUMPY CAN HANDLE THE INDEXING, RGB BACK TO 8-BIT UNSIGNED
         csv[:, 1].astype(int),
         csv[:, 0].astype(int)
+# REBUILD: PLACE EACH RGB VLAUE INTO ITS CORRESPONDING PIXEL LOCATION
     ] = csv[:, 2:5].astype(np.uint8)
 
-    # COMPARISON: DISPLAY ORIGINAL AND RECREATED IMAGES
+    # DISPLAY: CREATE SIDE BY SIDE DISPLAY
     plt.figure(figsize=(12, 6))
 
+# IMAGE ONE DISPLAY 
     plt.subplot(1, 2, 1)
     plt.imshow(rgb)
     plt.title("Original Input")
     plt.axis("on")
 
+# IMAGE TWO DISPLAY
     plt.subplot(1, 2, 2)
     plt.imshow(recreated)
     plt.title("Output Recreated from CSV")
     plt.axis("on")
 
+#RENDER BOTH IMAGES FOR VISUAL COMPARISON
     plt.show()
 
 
-# OUTPUT: RUN FUNCTION AND CREATE PIXEL DATA CSV
+# OUTPUT: RUN FUNCTION USING IMAGE INPUT PATH AND CSV OUTPUT PATH
 image_to_csv(
     "/Users/YourUser/Input_Image.jpg",
     "/Users/YourUser/Decomposed_Input_Image.csv"
