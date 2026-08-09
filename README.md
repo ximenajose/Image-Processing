@@ -3,6 +3,19 @@ Image Processing Python Scripts for Practice
 
 A set of python scripts, generated on both CLI and Jupyter Notebooks, are shared in this repository.
 
-Davinki controls basic parameters like lift, gamma, gain, contrast, saturation and luma/sat for RGB Channels.
-Able parses an image file into a CSV file that contains the data as pixel location, RGB channel values and luminance values.
-Parsi compares two Able-generated files, outputs image delta information and displays that delta as an image. 
+Basic Workflow:
+
+> Import Input_Image into Image_Processing and apply changes, run.
+>> Image_Processing generates Output_Image.
+> Import Input_Image into Decompose_Image, run.
+>> Decompose_Image outputs Input_Image.csv file.
+> Import Output_Image into Decompose_Image, run.
+>> Decompose_Image_Into_CSV outputs Output_Image.csv file.
+> Import Input_Image.csv and Output_Image.csv into Compare_CSVs
+>> Compare_CSVs generates a delta report and a delta image showing differences.
+
+Limitations:
+1. System currently compares two identically pre-registered images.
+2. System currently lacks registration features, which are being explored for implementation via OpenCV and/or sckikit-image.
+3. System assumes 8-bit throughout, though it can be modified to accommodate 10, 12 or 16 bit as needed.
+4. System assumes sRGB/Rec.709 luminance weights, though it can be modified to accommodate other standards.
