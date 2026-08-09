@@ -12,7 +12,7 @@ Basic Workflow:
 3. Import Output_Image into Decompose_Image, run.
       >Decompose_Image outputs Output_Image.csv file.
 4. Import Input_Image.csv and Output_Image.csv into Compare_CSVs
-      >Compare_CSVs generates a delta report and a delta image showing differences.
+      >Compare_CSVs generates a delta image showing differences.
 
 Limitations:
 1. System currently compares two identically pre-registered images.
