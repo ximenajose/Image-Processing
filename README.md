@@ -19,3 +19,4 @@ Limitations:
 2. System currently lacks registration features, which are being explored for implementation via OpenCV and/or sckikit-image.
 3. System assumes 8-bit throughout, though it can be modified to accommodate 10, 12 or 16 bit as needed.
 4. System assumes sRGB/Rec.709 luminance weights, though it can be modified to accommodate other standards.
+5. System currently requires toggling back and forth between scripts and could benefit from integration, though not recommended at this time to prevent scope creep.
