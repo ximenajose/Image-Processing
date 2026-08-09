@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 #FILE PATHS
-input_path = "/Users/ximenaguevara/Desktop/Image Processing/Images/Input.jpg"
-output_path = "/Users/ximenaguevara/Desktop/Image Processing/Images/Output.jpg"
+input_path = "/Users/youruser/Desktop/Image Processing/Images/Input_Image.jpg"
+processed_path = "/Users/youruser/Desktop/Image Processing/Images/Processed_Image.jpg"
 
 #CONTROLS - BALANCE
 
@@ -86,7 +86,7 @@ img = np.stack(
     )
 
 #FLOOR AND CEILING
-img = np. clip(img, 0.0, 1.0)
+img = np.clip(img, 0.0, 1.0)
 
 
 #DISPLAY ORIGINAL IMAGE
@@ -94,7 +94,7 @@ plt.figure(figsize=(15, 8))
 plt.imshow(arr)
 plt.title("Original")
 plt.axis("on")
-plt.show ()
+plt.show()
 
 #DISPLAY PROCESSED IMAGE
 plt.figure(figsize=(15, 8))
@@ -103,11 +103,11 @@ plt.title("Processed")
 plt.axis("on")
 plt.show()
 
-#CONVERT FROM NORMALIZED FLOAT BAK TO 8-BIT
-output_frame = np.round(img * 255).astype(np.uint8)
+#CONVERT FROM NORMALIZED FLOAT BACK TO 8-BIT
+processed_frame = np.round(img * 255).astype(np.uint8)
 
-#SAVE IMAGE
-output_image = Image.fromarray(output_frame)
-output_image.save(output_path)
+#SAVE PROCESSED IMAGE
+processed_image = Image.fromarray(processed_frame)
+processed_image.save(processed_path)
 
-print(f"Done. Wrote {output_path}")
+print(f"Done. Wrote {processed_path}")
