@@ -5,14 +5,14 @@ A set of python scripts, generated on both CLI and Jupyter Notebooks, are shared
 
 Basic Workflow:
 
-1. - Import Input_Image into Image_Processing and apply changes, run.
-  --Image_Processing generates Output_Image.
-2a. - Import Input_Image into Decompose_Image, run.
-  -- Decompose_Image outputs Input_Image.csv file.
-2b. - Import Output_Image into Decompose_Image, run.
-  -- Decompose_Image_Into_CSV outputs Output_Image.csv file.
-3. - Import Input_Image.csv and Output_Image.csv into Compare_CSVs
-  -- Compare_CSVs generates a delta report and a delta image showing differences.
+1. Import Input_Image into Image_Processing and apply changes, run.
+      >Image_Processing generates Output_Image.
+2. Import Input_Image into Decompose_Image, run.
+      >Decompose_Image outputs Input_Image.csv file.
+3. Import Output_Image into Decompose_Image, run.
+      >Decompose_Image_Into_CSV outputs Output_Image.csv file.
+4. Import Input_Image.csv and Output_Image.csv into Compare_CSVs
+      >Compare_CSVs generates a delta report and a delta image showing differences.
 
 Limitations:
 1. System currently compares two identically pre-registered images.
