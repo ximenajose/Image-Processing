@@ -1,10 +1,12 @@
+```python
 # TOOLS
+
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 # FUNCTION: INPUT IMAGE PATH AND CSV OUTPUT PATH
+
 def image_to_csv(image_path, csv_path):
 
     # STANDARDIZE IMAGE: OPEN IMAGE, CONVERT PILLOW INFO INTO 3-CHANNEL RGB THROW AWAY THE REST, CONVERT TO NUMPY
@@ -24,7 +26,7 @@ def image_to_csv(image_path, csv_path):
         (0.2126 * r)
         + (0.7152 * g)
         + (0.0722 * b)
-    ) / 255 # ASSUMES 8-BIT, CAN BE ADAPTED FOR 10, 12, 16 BIT AS NEEDED
+    ) / 255  # ASSUMES 8-BIT, CAN BE ADAPTED FOR 10, 12, 16 BIT AS NEEDED
 
     # DATA: FLATTEN ARRAYS INTO COLUMNS WHERE EACH ROW IS ONE PIXEL
     data = np.column_stack((
@@ -46,7 +48,7 @@ def image_to_csv(image_path, csv_path):
         fmt=["%d", "%d", "%d", "%d", "%d", "%.6f"]
     )
 
-    # RELOAD: READS CSV FROM ABOVE INTO NUMPY FOR RECONSTRUCTION / VISUAL VERIFICATION THAT (PERCEPTUALLY) NO LOSS OCCURED
+    # RELOAD: READS CSV FROM ABOVE INTO NUMPY FOR RECONSTRUCTION / VISUAL VERIFICATION THAT (PERCEPTUALLY) NO LOSS OCCURRED
     csv = np.loadtxt(
         csv_path,
         delimiter=",",
@@ -54,36 +56,36 @@ def image_to_csv(image_path, csv_path):
     )
 
     # CONTAINER: CREATE EMPTY RGB NUMPY ARRAY WITH ORIGINAL DIMENSIONS
-    recreated = np.zeros((h, w, 3), dtype=np.uint8) # ASSUMES 8-BIT, CAN BE ADAPTED FOR 10, 12, 16 BIT AS NEEDED
+    recreated = np.zeros((h, w, 3), dtype=np.uint8)  # ASSUMES 8-BIT, CAN BE ADAPTED FOR 10, 12, 16 BIT AS NEEDED
 
+    # RETROFIT: RECONVERT FLOATS INTO INTEGERS SO NUMPY CAN HANDLE THE INDEXING
     recreated[
-# RETROFIT: RECONVERT FLOATS INTO INTEGERS SO NUMPY CAN HANDLE THE INDEXING
         csv[:, 1].astype(int),
         csv[:, 0].astype(int)
-# RETROFIT: RGB BACK TO 8-BIT UNSIGNED
-    ] = csv[:, 2:5].astype(np.uint8) # ASSUMES 8-BIT, CAN BE ADAPTED FOR 10, 12, 16 BIT AS NEEDED
+    ] = csv[:, 2:5].astype(np.uint8)  # ASSUMES 8-BIT, CAN BE ADAPTED FOR 10, 12, 16 BIT AS NEEDED
 
     # DISPLAY: CREATE SIDE BY SIDE DISPLAY
     plt.figure(figsize=(12, 6))
 
-# IMAGE ONE DISPLAY (MISSING VALUES MAY STAY BLACK) 
+    # IMAGE ONE DISPLAY
     plt.subplot(1, 2, 1)
     plt.imshow(rgb)
     plt.title("Original Input")
     plt.axis("on")
 
-# IMAGE TWO DISPLAY (MISSING VALUES MAY STAY BLACK)
+    # IMAGE TWO DISPLAY
     plt.subplot(1, 2, 2)
     plt.imshow(recreated)
-    plt.title("Output Recreated from CSV")
+    plt.title("Recreated from CSV")
     plt.axis("on")
 
-#RENDER BOTH IMAGES FOR VISUAL COMPARISON
+    # RENDER BOTH IMAGES FOR VISUAL COMPARISON
     plt.show()
 
 
-# OUTPUT: RUN FUNCTION USING IMAGE INPUT PATH AND CSV OUTPUT PATH
+# OUTPUT: RUN FUNCTION USING INPUT IMAGE PATH AND CSV OUTPUT PATH
+
 image_to_csv(
-    "/Users/YourUser/Input_Image.jpg",
-    "/Users/YourUser/Decomposed_Input_Image.csv"
+    "/Users/youruser/Input_Image.jpg",
+    "/Users/youruser/Input_Image.csv"
 )
